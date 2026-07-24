@@ -14,8 +14,14 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
 
-      - run: terraform init
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
 
-      - run: terraform plan
+      - name: Terraform Plan
+        working-directory: terraform
+        run: terraform plan
 
-      - run: terraform apply -auto-approve
+      - name: Terraform Apply
+        working-directory: terraform
+        run: terraform apply -auto-approve
