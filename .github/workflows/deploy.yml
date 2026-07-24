@@ -1,5 +1,4 @@
 name: Deploy
-#test
 on:
   push:
     branches:
