@@ -26,7 +26,7 @@ jobs:
         env:
             ACTIONS_STEP_DEBUG: true
         run: | 
-          echo "repo=${GITHUB_REPOSITORY}"6    
+          echo "repo=${GITHUB_REPOSITORY}"    
           echo "ref=${GITHUB_REF}"
     
       - name: Configure AWS credentials
