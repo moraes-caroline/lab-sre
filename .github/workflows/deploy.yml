@@ -21,6 +21,13 @@ jobs:
           echo "repository=${{ github.repository }}"
           echo "ref=${{ github.ref }}"
           echo "workflow=${{ github.workflow }}"
+
+      - name: Debug OIDC2  
+        env:
+            ACTIONS_STEP_DEBUG: true
+        run: | 
+          echo "repo=${GITHUB_REPOSITORY}"6    
+          echo "ref=${GITHUB_REF}"
     
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
