@@ -45,7 +45,18 @@ jobs:
       - name: Terraform Validate
         working-directory: terraform
         run: terraform validate
-
+        
+      - name: Debug Secret
+        run: |
+          if [ -z "$TF_VAR_allowed_ip" ]; then
+            echo "ALLOWED_IP está vazio"
+            exit 1
+          else
+            echo "ALLOWED_IP carregado com sucesso"
+          fi
+        env:
+          TF_VAR_allowed_ip: ${{ secrets.ALLOWED_IP }}
+          
       - name: Terraform Plan
         working-directory: terraform
         run: terraform plan -input=false -var-file="dev.tfvars"
