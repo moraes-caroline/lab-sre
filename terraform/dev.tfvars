@@ -4,6 +4,6 @@ environment = "dev"
 
 instance_name = "observability-lab"
 
-instance_type = "t2.micro"
+instance_type = "t3.micro"
 
 ami_id = "ami-0006118602dfc1c09"
