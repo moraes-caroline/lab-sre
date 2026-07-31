@@ -15,10 +15,6 @@ variable "instance_type" {
   type = string
 }
 
-#variable "instance_profile_name" {
- # type = string
-#  }
-
 variable "ami_id" {
   type = string
   default = "ami-02b64aa047cb5edf5"
