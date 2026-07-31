@@ -41,8 +41,9 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        working-directory: terraform/modules
-        run: terraform plan
+        run: |
+          cd terraform
+          terraform plan -var-file="dev.tfvars"
 
       - name: Terraform Apply
         working-directory: terraform
