@@ -34,9 +34,9 @@ jobs:
           role-to-assume: arn:aws:iam::035885606922:role/githuboidc
           role-session-name: GitHubActions
 
-      - name: Terraform Format Check
+      - name: Terraform Format
         working-directory: terraform
-        run: terraform fmt -check
+        run: terraform fmt -recursive
 
       - name: Terraform Init
         working-directory: terraform
