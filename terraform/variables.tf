@@ -15,9 +15,9 @@ variable "instance_type" {
   type = string
 }
 
-#variable "ami_id" {
- # type = string
-#}
+variable "ami_id" {
+  type = string
+}
 
 variable "allowed_ip" {
   type    = string
