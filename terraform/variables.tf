@@ -20,6 +20,7 @@ variable "instance_profile_name" {
 
 variable "ami_id" {
   type = string
+  default = "ami-02b64aa047cb5edf5"
 }
 
 variable "allowed_ip" {
