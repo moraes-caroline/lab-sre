@@ -46,16 +46,9 @@ jobs:
         working-directory: terraform
         run: terraform validate
         
-      - name: Debug Secret
+      - name: Get Current IP
         run: |
-          if [ -z "$TF_VAR_allowed_ip" ]; then
-            echo "ALLOWED_IP está vazio"
-            exit 1
-          else
-            echo "ALLOWED_IP carregado com sucesso"
-          fi
-        env:
-          TF_VAR_allowed_ip: ${{ secrets.ALLOWED_IP }}
+          echo "TF_VAR_allowed_ip=$(curl -s https://checkip.amazonaws.com)/32" >> $GITHUB_ENV
           
       - name: Terraform Plan
         working-directory: terraform
