@@ -19,13 +19,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# PostgreSQL
-conn = psycopg2.connect(
-    host="localhost",
-    database="observability",
-    user="sre",
-    password="sre123"
-)
+
+def get_connection():
+    return psycopg2.connect(
+        host="localhost",
+        database="observability",
+        user="sre",
+        password="sre123"
+    )
 
 
 @app.route("/")
@@ -60,6 +61,7 @@ def error():
 @app.route("/db")
 def db():
     with tracer.start_as_current_span("database-query"):
+        conn = get_connection()
         cur = conn.cursor()
 
         cur.execute("SELECT now();")
@@ -67,6 +69,7 @@ def db():
         result = cur.fetchone()
 
         cur.close()
+        conn.close()
 
     return jsonify(time=str(result[0]))
 
@@ -74,6 +77,7 @@ def db():
 @app.route("/insert")
 def insert():
     with tracer.start_as_current_span("database-insert"):
+        conn = get_connection()
         cur = conn.cursor()
 
         cur.execute(
@@ -85,8 +89,8 @@ def insert():
         )
 
         conn.commit()
-
         cur.close()
+        conn.close()
 
     return jsonify(status="saved")
 
@@ -94,11 +98,12 @@ def insert():
 @app.route("/stats")
 def stats():
     with tracer.start_as_current_span("database-count"):
+        conn = get_connection()
         cur = conn.cursor()
 
         cur.execute(
             """
-            SELECT count(*)
+            SELECT COUNT(*)
             FROM requests
             """
         )
@@ -106,6 +111,7 @@ def stats():
         count = cur.fetchone()[0]
 
         cur.close()
+        conn.close()
 
     return jsonify(records=count)
 
