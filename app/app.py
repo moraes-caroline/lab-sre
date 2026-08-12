@@ -1,8 +1,10 @@
 from flask import Flask, jsonify
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
 import time
 import logging
 
 app = Flask(__name__)
+FlaskInstrumentor().instrument_app(app)
 
 # Basic structured logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
