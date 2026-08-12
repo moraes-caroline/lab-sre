@@ -5,3 +5,4 @@ opentelemetry-exporter-otlp
 opentelemetry-instrumentation
 opentelemetry-instrumentation-flask
 psycopg2-binary
+gunicorn==20.1.0
