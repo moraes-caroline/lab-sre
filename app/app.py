@@ -5,11 +5,14 @@ import psycopg2
 
 from opentelemetry import trace
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
 
 app = Flask(__name__)
 
 # OpenTelemetry
 FlaskInstrumentor().instrument_app(app)
+Psycopg2Instrumentor().instrument()
+
 tracer = trace.get_tracer(__name__)
 
 # Logging
@@ -17,6 +20,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s"
 )
+
 logger = logging.getLogger(__name__)
 
 
@@ -37,6 +41,24 @@ def home():
 @app.route("/health")
 def health():
     return jsonify(status="healthy")
+
+
+@app.route("/db-health")
+def db_health():
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute("SELECT 1")
+
+        cur.close()
+        conn.close()
+
+        return jsonify(status="healthy")
+
+    except Exception as e:
+        logger.exception("Database health check failed")
+        return jsonify(status="unhealthy", error=str(e)), 500
 
 
 @app.route("/slow")
@@ -60,60 +82,79 @@ def error():
 
 @app.route("/db")
 def db():
-    with tracer.start_as_current_span("database-query"):
-        conn = get_connection()
-        cur = conn.cursor()
+    try:
+        with tracer.start_as_current_span("database-query"):
 
-        cur.execute("SELECT now();")
+            conn = get_connection()
+            cur = conn.cursor()
 
-        result = cur.fetchone()
+            cur.execute("SELECT now();")
 
-        cur.close()
-        conn.close()
+            result = cur.fetchone()
 
-    return jsonify(time=str(result[0]))
+            cur.close()
+            conn.close()
+
+        return jsonify(time=str(result[0]))
+
+    except Exception as e:
+        logger.exception("Erro no endpoint /db")
+        return jsonify(error=str(e)), 500
 
 
 @app.route("/insert")
 def insert():
-    with tracer.start_as_current_span("database-insert"):
-        conn = get_connection()
-        cur = conn.cursor()
+    try:
+        with tracer.start_as_current_span("database-insert"):
 
-        cur.execute(
-            """
-            INSERT INTO requests(endpoint)
-            VALUES (%s)
-            """,
-            ("/insert",)
-        )
+            conn = get_connection()
+            cur = conn.cursor()
 
-        conn.commit()
-        cur.close()
-        conn.close()
+            cur.execute(
+                """
+                INSERT INTO requests(endpoint)
+                VALUES (%s)
+                """,
+                ("/insert",)
+            )
 
-    return jsonify(status="saved")
+            conn.commit()
+
+            cur.close()
+            conn.close()
+
+        return jsonify(status="saved")
+
+    except Exception as e:
+        logger.exception("Erro no endpoint /insert")
+        return jsonify(error=str(e)), 500
 
 
 @app.route("/stats")
 def stats():
-    with tracer.start_as_current_span("database-count"):
-        conn = get_connection()
-        cur = conn.cursor()
+    try:
+        with tracer.start_as_current_span("database-count"):
 
-        cur.execute(
-            """
-            SELECT COUNT(*)
-            FROM requests
-            """
-        )
+            conn = get_connection()
+            cur = conn.cursor()
 
-        count = cur.fetchone()[0]
+            cur.execute(
+                """
+                SELECT COUNT(*)
+                FROM requests
+                """
+            )
 
-        cur.close()
-        conn.close()
+            count = cur.fetchone()[0]
 
-    return jsonify(records=count)
+            cur.close()
+            conn.close()
+
+        return jsonify(records=count)
+
+    except Exception as e:
+        logger.exception("Erro no endpoint /stats")
+        return jsonify(error=str(e)), 500
 
 
 if __name__ == "__main__":
