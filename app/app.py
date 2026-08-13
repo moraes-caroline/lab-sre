@@ -138,6 +138,9 @@ def stats():
             conn = get_connection()
             cur = conn.cursor()
 
+            # Simulação de query lenta
+            time.sleep(3)
+
             cur.execute(
                 """
                 SELECT COUNT(*)
@@ -146,6 +149,8 @@ def stats():
             )
 
             count = cur.fetchone()[0]
+
+            logger.info(f"Total registros: {count}")
 
             cur.close()
             conn.close()
