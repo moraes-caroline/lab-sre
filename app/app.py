@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 import time
 import logging
 import psycopg2
+import os
 
 from opentelemetry import trace
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
