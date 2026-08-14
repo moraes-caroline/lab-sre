@@ -29,7 +29,7 @@ def get_connection():
         host="localhost",
         database="observability",
         user="sre",
-        password="sre123"
+        password=os.environ["SRE_PASS_DB"]
     )
 
 
